@@ -102,21 +102,6 @@ npm install express mongoose bcrypt jsonwebtoken dotenv cors express-validator b
 
 ## 블로그에 정리해야하는 정보
 
-1. React와 Node.js의 차이점
-- React:
-
-- 종류: 라이브러리 (또는 프레임워크로 간주되기도 함)
-- 용도: 프론트엔드 개발
-- 기능: 사용자 인터페이스(UI) 구축, 컴포넌트 기반 구조, 클라이언트 사이드 렌더링
-- 특징: Virtual DOM을 사용하여 성능 최적화, 컴포넌트 재사용 가능
-
-- Node.js:
-
-- 종류: 런타임 환경
-- 용도: 백엔드 개발
-- 기능: 서버 구축, 데이터베이스 연동, API 제공
-- 특징: 비동기 I/O 처리, 싱글 스레드 기반으로 높은 성능과 확장성 제공
-
 2. Axios와 Fetch API의 차이점
 - Axios:
 
@@ -191,3 +176,204 @@ npm start
 cd client
 npm start
 ```
+
+1. constants 폴더
+현재 이해:
+
+sample.jsx의 스크립트를 sample.js 파일로 만들어 관리.
+올바른 이해:
+
+constants 폴더는 **변하지 않는 값들(상수)**을 관리하는 곳입니다. 예를 들어, API 엔드포인트, 색상 코드, 상태 코드 등 애플리케이션 전반에서 재사용되는 상수를 정의합니다.
+**스크립트 파일(component scripts)**을 이 폴더에 넣는 것은 적절하지 않습니다. 대신, 컴포넌트 파일은 components 폴더와 같은 별도의 폴더에 보관하는 것이 좋습니다.
+올바른 사용 예:
+
+예시 코드: constants/colors.js
+javascript
+코드 복사
+// colors.js
+// 애플리케이션에서 사용하는 색상 코드 상수
+export const PRIMARY_COLOR = "#3498db";  // 주 색상 (파란색 계열)
+export const SECONDARY_COLOR = "#2ecc71"; // 부 색상 (녹색 계열)
+export const ERROR_COLOR = "#e74c3c"; // 에러 메시지 등에 사용되는 색상 (빨간색 계열)
+예시 코드: constants/api.js
+javascript
+코드 복사
+// api.js
+// API 엔드포인트 상수
+export const BASE_URL = "https://api.example.com";  // API의 기본 URL
+export const LOGIN_ENDPOINT = "/auth/login";  // 로그인 API 엔드포인트
+export const REGISTER_ENDPOINT = "/auth/register";  // 회원가입 API 엔드포인트
+요약:
+
+constants 폴더에는 컴포넌트나 페이지 로직을 포함한 스크립트가 아니라, 변하지 않는 상수값을 정의하는 파일을 보관합니다.
+예를 들어, 컬러 코드, API URL, 상태 코드 등을 이곳에 정의하여 여러 곳에서 재사용할 수 있습니다.
+2. context 폴더
+현재 이해:
+
+사용자의 로그인 여부 등에 따른 조건식 스크립트를 관리.
+올바른 이해:
+
+context 폴더는 React Context API를 사용하여 애플리케이션의 전역 상태를 관리하는 곳입니다. 이는 단순히 조건식 스크립트보다는 상태와 그 상태를 업데이트하는 로직을 포함합니다.
+올바른 사용 예:
+
+예시 코드: context/AuthContext.js
+javascript
+코드 복사
+// AuthContext.js
+// 사용자 인증 상태를 관리하기 위한 Context
+
+import React, { createContext, useState } from 'react';
+
+// AuthContext: 애플리케이션의 인증 상태를 공유하기 위한 Context
+export const AuthContext = createContext();
+
+// AuthProvider: 자식 컴포넌트에 인증 상태를 제공하는 Provider 컴포넌트
+export const AuthProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // 인증 상태 (로그인 여부)
+
+  const login = () => setIsAuthenticated(true); // 로그인 함수
+  const logout = () => setIsAuthenticated(false); // 로그아웃 함수
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+예시 코드: context/ThemeContext.js
+javascript
+코드 복사
+// ThemeContext.js
+// 애플리케이션의 테마(라이트/다크 모드)를 관리하기 위한 Context
+
+import React, { createContext, useState } from 'react';
+
+// ThemeContext: 테마 설정을 공유하기 위한 Context
+export const ThemeContext = createContext();
+
+// ThemeProvider: 자식 컴포넌트에 테마 설정을 제공하는 Provider 컴포넌트
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light'); // 기본 테마는 라이트 모드
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light')); // 테마 토글 함수
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+요약:
+
+context 폴더에는 애플리케이션 전반에서 공유할 전역 상태와 해당 상태를 관리하는 로직을 포함한 파일들을 보관합니다.
+예를 들어, 사용자 인증 상태, 테마 설정, 언어 설정 등을 관리합니다.
+조건식 스크립트보다는 상태 관리와 관련된 코드가 주를 이룹니다.
+3. data 폴더
+현재 이해:
+
+JSON처럼 수정되거나 변경되는 정보들을 객체로 저장해놓는 역할.
+올바른 이해:
+
+data 폴더는 정적 데이터 또는 **모의 데이터(mock data)**를 관리하는 곳입니다. 이는 애플리케이션의 특정 기능을 테스트하거나 초기 데이터를 제공하는 데 사용됩니다.
+실제로 수정되거나 변경될 데이터는 일반적으로 데이터베이스나 API를 통해 관리되지만, data 폴더는 개발 단계에서 이를 모방하는 용도로 사용됩니다.
+올바른 사용 예:
+
+예시 코드: data/menuItems.js
+javascript
+코드 복사
+// menuItems.js
+// 애플리케이션 내에서 사용되는 메뉴 항목 데이터
+
+export const menuItems = [
+  { id: 1, label: "Home", link: "/" },  // 홈 페이지로 이동하는 메뉴 항목
+  { id: 2, label: "About", link: "/about" },  // About 페이지로 이동하는 메뉴 항목
+  { id: 3, label: "Contact", link: "/contact" },  // Contact 페이지로 이동하는 메뉴 항목
+];
+예시 코드: data/mockUsers.js
+javascript
+코드 복사
+// mockUsers.js
+// 테스트를 위한 모의 사용자 데이터
+
+export const mockUsers = [
+  { id: 1, name: "John Doe", email: "john@example.com" },  // 사용자 1
+  { id: 2, name: "Jane Smith", email: "jane@example.com" },  // 사용자 2
+];
+요약:
+
+data 폴더에는 정적 데이터, 더미 데이터, 모의 데이터를 저장합니다.
+이 데이터들은 개발 중에 테스트용으로 사용되며, 실제 데이터는 API나 데이터베이스에서 가져옵니다.
+JSON 형식이나 JavaScript 객체 형식으로 데이터를 정의할 수 있습니다.
+4. utils 폴더
+현재 이해:
+
+다른 JSX 파일에서도 공용적으로 사용되거나 재활용 가능한 코드 파일을 넣어두는 것.
+올바른 이해:
+
+맞습니다! utils 폴더는 재사용 가능한 유틸리티 함수나 헬퍼 함수를 보관하는 곳으로, 여러 컴포넌트에서 공통적으로 사용될 수 있는 로직을 포함합니다.
+올바른 사용 예:
+
+예시 코드: utils/formatDate.js
+javascript
+코드 복사
+// formatDate.js
+// 날짜를 특정 형식으로 변환하는 유틸리티 함수
+
+export const formatDate = (date) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' }; // 날짜 형식 옵션
+  return new Date(date).toLocaleDateString(undefined, options); // 형식에 맞춘 날짜 반환
+};
+예시 코드: utils/calculateSum.js
+javascript
+코드 복사
+// calculateSum.js
+// 숫자 배열의 합계를 계산하는 유틸리티 함수
+
+export const calculateSum = (numbers) => {
+  return numbers.reduce((total, num) => total + num, 0);  // 배열의 모든 숫자를 더하여 합계 반환
+};
+요약:
+
+utils 폴더에는 재사용 가능한 함수나 헬퍼 함수를 저장합니다.
+예를 들어, 날짜 포맷팅, 숫자 계산, 문자열 처리 등 다양한 유틸리티 함수가 여기에 포함될 수 있습니다.
+코드의 중복을 줄이고, 유지보수를 용이하게 합니다.
+전체 요약 및 추가 설명
+1. constants
+역할: 변하지 않는 상수 값을 정의하고 관리합니다.
+포함: 색상 코드, API URL, 상태 코드 등.
+예시: colors.js, api.js.
+2. context
+역할: React Context API를 사용해 전역 상태를 관리하고 공유합니다.
+포함: Context 생성, Provider 컴포넌트, Custom Hooks.
+예시: AuthContext.js, ThemeContext.js.
+3. data
+역할: 정적 데이터, 모의 데이터, 더미 데이터를 관리합니다.
+포함: 메뉴 항목, 모의 사용자 데이터 등.
+예시: menuItems.js, mockUsers.js.
+4. utils
+역할: 재사용 가능한 유틸리티 함수나 헬퍼 함수를 관리합니다.
+포함: 날짜 포맷팅, 숫자 계산 등.
+예시: formatDate.js, calculateSum.js.
+추가 팁
+폴더 네이밍 일관성 유지:
+
+파일 이름은 기능에 맞게 직관적으로 명명하세요. 예를 들어, 상수 파일은 colors.js, api.js처럼 명명합니다.
+폴더 구조 확장성 고려:
+
+프로젝트가 커짐에 따라 폴더 구조를 확장할 필요가 있습니다. 예를 들어, constants 폴더 내에 api.js, colors.js처럼 세부 파일을 나누는 것이 좋습니다.
+모듈화와 코드 분리:
+
+관련된 기능이나 데이터를 그룹화하여 관리하면 유지보수가 용이해집니다. 예를 들어, 인증 관련 상수는 constants/auth.js에, 테마 관련 상수는 constants/theme.js에 저장할 수 있습니다.
+문서화:
+
+각 파일의 역할과 사용법을 주석이나 별도의 문서로 정리하면 팀원들과의 협업에 도움이 됩니다.
+추가적으로 고려할 폴더들
+프로젝트의 규모와 필요에 따라 추가적으로 유용한 폴더들이 있습니다:
+
+components: 재사용 가능한 UI 컴포넌트를 저장합니다.
+pages: 각 페이지 컴포넌트를 저장합니다.
+hooks: 커스텀 훅을 저장합니다.
+services: API 호출 로직이나 비즈니스 로직을 저장합니다.
+styles: 전역 스타일이나 CSS 관련 파일을 저장합니다.
